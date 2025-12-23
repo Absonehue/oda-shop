@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Votre Sélection | ODA SHOP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Montserrat&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background: #fdfbf8; color: #2c2c2c; text-align: center; padding: 50px; }
+        h1 { font-family: 'Cormorant Garamond', serif; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-radius: 8px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #eee; }
+        .item-details { text-align: left; }
+        .remove-link { color: #a00; text-decoration: none; font-size: 0.7em; text-transform: uppercase; border: 1px solid #eee; padding: 5px 10px; transition: 0.3s; }
+        .remove-link:hover { background: #fff5f5; border-color: #a00; }
+        .total { margin-top: 30px; font-weight: bold; font-size: 1.4em; color: #d4af37; border-top: 2px solid #fdfbf8; padding-top: 20px; }
+        .btn { display: inline-block; background: #2c2c2c; color: white; padding: 18px 35px; text-decoration: none; margin-top: 25px; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9em; width: 80%; cursor: pointer; border: none; }
+        .empty-link { display: block; margin-top: 20px; font-size: 0.8em; color: #888; text-decoration: none; text-transform: lowercase; }
+        .empty-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('index') }}" style="text-decoration: none; color: #2c2c2c; font-size: 0.8em; letter-spacing: 1px; font-weight: 500;">← RETOUR À LA COLLECTION</a>
+    
+    <h1>Votre Sélection</h1>
+    
+    <div class="container">
+        {% if produits %}
+            {% for p in produits %}
+            <div class="cart-item">
+                <div class="item-details">
+                    <div style="font-weight: 600; font-size: 1.1em;">{{ p.nom }}</div>
+                    <div style="font-size: 0.9em; color: #666;">Quantité : {{ p.quantite }}</div>
+                    <div style="font-size: 0.9em; color: #d4af37; font-weight: 500;">{{ p.sous_total }} FCFA</div>
+                </div>
+                <a href="{{ url_for('retirer_produit', id_produit=p.id) }}" class="remove-link">Retirer</a>
+            </div>
+            {% endfor %}
+            
+            <div class="total">TOTAL : {{ total }} FCFA</div>
+            
+            <a href="#" id="waLink" class="btn">Commander via WhatsApp</a>
+            
+            <a href="{{ url_for('vider_panier') }}" class="empty-link">Réinitialiser le panier</a>
+        {% else %}
+            <p style="font-style: italic; color: #888;">Votre panier est encore vierge de toute fragrance...</p>
+            <a href="{{ url_for('index') }}" class="btn">Découvrir la collection</a>
+        {% endif %}
+    </div>
+
+    <script>
+        // Génération dynamique du message WhatsApp
+        const phone = "2250506177697";
+        let text = "Bonjour ODA SHOP, voici ma commande :\n\n";
+        
+        {% for p in produits %}
+            text += "✨ {{ p.nom }} (x{{ p.quantite }}) : {{ p.sous_total }} FCFA\n";
+        {% endfor %}
+        
+        text += "\n💰 TOTAL : {{ total }} FCFA";
+        
+        const link = document.getElementById('waLink');
+        if(link) {
+            link.href = "https://wa.me/" + phone + "?text=" + encodeURIComponent(text);
+        }
+    </script>
+</body>
+</html>
